@@ -1,5 +1,5 @@
  //These libraries are for the running of this API.
-+const { URL } = require('url');
++import { URL } from "url";
  const express = require("express");
  const router = express.Router();
  var request = require("request");
@@ -64,17 +64,6 @@
        },
        authenticationRequest: {
          authenticationType: "Secure3D21AuthenticationRequest",
-+    // Define the allowlist of trusted hostnames within the function
-+    // Add trusted hostnames here
-+    const ALLOWED_HOSTNAMES = ["example.com", "api.example.com"];
-+    try {
-+        const parsedUrl = new URL(options.url);
-+        if (!ALLOWED_HOSTNAMES.includes(parsedUrl.hostname)) {
-+            return callback(new Error("Hostname not allowed"));
-+        }
-+    } catch (error) {
-+        return callback(new Error("Invalid URL"));
-+    }
          termURL: "http://localhost:3124/api/v1/payments/3ds",
          challengeIndicator: "04", // This indicates what type of transaction we would like. 
        },
@@ -102,6 +91,17 @@
    fiservEncode(
      "PATCH",
      url + req.params.transactionId,
++        // Define the allowlist of trusted hostnames within the function
++        // Add trusted hostnames here
++        const ALLOWED_HOSTNAMES = ["example.com", "api.example.com"];
++        try {
++            const parsedUrl = new URL(options.url);
++            if (!ALLOWED_HOSTNAMES.includes(parsedUrl.hostname)) {
++                return res.status(400).json({ error: "Hostname not allowed" });
++            }
++        } catch (error) {
++            return res.status(400).json({ error: "Invalid URL" });
++        }
      {
        authenticationType: "Secure3D21AuthenticationUpdateRequest",
        methodNotificationStatus: "RECEIVED" // This is what we update
